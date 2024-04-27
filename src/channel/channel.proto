@@ -1,9 +1,9 @@
 syntax = "proto3";
 
-package raft_stock;
+package channel;
 
 // The service definition for Raft.
-service RaftService {
+service ChannelService {
   rpc RequestVote(VoteRequest) returns (VoteResponse);
   rpc AppendEntries(EntriesRequest) returns (EntriesResponse);
 }

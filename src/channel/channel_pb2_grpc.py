@@ -2,10 +2,10 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-import raft_stock_pb2 as raft__stock__pb2
+import channel_pb2 as channel__pb2
 
 
-class RaftServiceStub(object):
+class ChannelServiceStub(object):
     """The service definition for Raft.
     """
 
@@ -16,18 +16,18 @@ class RaftServiceStub(object):
             channel: A grpc.Channel.
         """
         self.RequestVote = channel.unary_unary(
-                '/raft_stock.RaftService/RequestVote',
-                request_serializer=raft__stock__pb2.VoteRequest.SerializeToString,
-                response_deserializer=raft__stock__pb2.VoteResponse.FromString,
+                '/channel.ChannelService/RequestVote',
+                request_serializer=channel__pb2.VoteRequest.SerializeToString,
+                response_deserializer=channel__pb2.VoteResponse.FromString,
                 )
         self.AppendEntries = channel.unary_unary(
-                '/raft_stock.RaftService/AppendEntries',
-                request_serializer=raft__stock__pb2.EntriesRequest.SerializeToString,
-                response_deserializer=raft__stock__pb2.EntriesResponse.FromString,
+                '/channel.ChannelService/AppendEntries',
+                request_serializer=channel__pb2.EntriesRequest.SerializeToString,
+                response_deserializer=channel__pb2.EntriesResponse.FromString,
                 )
 
 
-class RaftServiceServicer(object):
+class ChannelServiceServicer(object):
     """The service definition for Raft.
     """
 
@@ -44,26 +44,26 @@ class RaftServiceServicer(object):
         raise NotImplementedError('Method not implemented!')
 
 
-def add_RaftServiceServicer_to_server(servicer, server):
+def add_ChannelServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'RequestVote': grpc.unary_unary_rpc_method_handler(
                     servicer.RequestVote,
-                    request_deserializer=raft__stock__pb2.VoteRequest.FromString,
-                    response_serializer=raft__stock__pb2.VoteResponse.SerializeToString,
+                    request_deserializer=channel__pb2.VoteRequest.FromString,
+                    response_serializer=channel__pb2.VoteResponse.SerializeToString,
             ),
             'AppendEntries': grpc.unary_unary_rpc_method_handler(
                     servicer.AppendEntries,
-                    request_deserializer=raft__stock__pb2.EntriesRequest.FromString,
-                    response_serializer=raft__stock__pb2.EntriesResponse.SerializeToString,
+                    request_deserializer=channel__pb2.EntriesRequest.FromString,
+                    response_serializer=channel__pb2.EntriesResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'raft_stock.RaftService', rpc_method_handlers)
+            'channel.ChannelService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
  # This class is part of an EXPERIMENTAL API.
-class RaftService(object):
+class ChannelService(object):
     """The service definition for Raft.
     """
 
@@ -78,9 +78,9 @@ class RaftService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/raft_stock.RaftService/RequestVote',
-            raft__stock__pb2.VoteRequest.SerializeToString,
-            raft__stock__pb2.VoteResponse.FromString,
+        return grpc.experimental.unary_unary(request, target, '/channel.ChannelService/RequestVote',
+            channel__pb2.VoteRequest.SerializeToString,
+            channel__pb2.VoteResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -95,8 +95,8 @@ class RaftService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/raft_stock.RaftService/AppendEntries',
-            raft__stock__pb2.EntriesRequest.SerializeToString,
-            raft__stock__pb2.EntriesResponse.FromString,
+        return grpc.experimental.unary_unary(request, target, '/channel.ChannelService/AppendEntries',
+            channel__pb2.EntriesRequest.SerializeToString,
+            channel__pb2.EntriesResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
