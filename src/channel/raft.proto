@@ -4,7 +4,7 @@ package raft;
 
 // Service for client operations
 service ClientRaftService {
-  rpc AddEntry(Transaction) returns (EntryResponse);
+  rpc AddTransaction(Transaction) returns (TransactionResponse);
 }
 
 // Service for Raft internal operations
@@ -56,4 +56,8 @@ message VoteRequest {
 message VoteResponse {
   int32 term = 1;               // Current term, for the candidate to update itself
   bool voteGranted = 2;         // True means candidate received vote
+}
+
+message TransactionResponse {
+  bool success = 1;             // True if the transaction was successful
 }

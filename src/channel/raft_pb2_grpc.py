@@ -15,10 +15,10 @@ class ClientRaftServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.AddEntry = channel.unary_unary(
-                '/raft.ClientRaftService/AddEntry',
+        self.AddTransaction = channel.unary_unary(
+                '/raft.ClientRaftService/AddTransaction',
                 request_serializer=raft__pb2.Transaction.SerializeToString,
-                response_deserializer=raft__pb2.EntryResponse.FromString,
+                response_deserializer=raft__pb2.TransactionResponse.FromString,
                 )
 
 
@@ -26,7 +26,7 @@ class ClientRaftServiceServicer(object):
     """Service for client operations
     """
 
-    def AddEntry(self, request, context):
+    def AddTransaction(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -35,10 +35,10 @@ class ClientRaftServiceServicer(object):
 
 def add_ClientRaftServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'AddEntry': grpc.unary_unary_rpc_method_handler(
-                    servicer.AddEntry,
+            'AddTransaction': grpc.unary_unary_rpc_method_handler(
+                    servicer.AddTransaction,
                     request_deserializer=raft__pb2.Transaction.FromString,
-                    response_serializer=raft__pb2.EntryResponse.SerializeToString,
+                    response_serializer=raft__pb2.TransactionResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -52,7 +52,7 @@ class ClientRaftService(object):
     """
 
     @staticmethod
-    def AddEntry(request,
+    def AddTransaction(request,
             target,
             options=(),
             channel_credentials=None,
@@ -62,9 +62,9 @@ class ClientRaftService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/raft.ClientRaftService/AddEntry',
+        return grpc.experimental.unary_unary(request, target, '/raft.ClientRaftService/AddTransaction',
             raft__pb2.Transaction.SerializeToString,
-            raft__pb2.EntryResponse.FromString,
+            raft__pb2.TransactionResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
