@@ -28,7 +28,7 @@ message EntriesRequest {
   int32 leaderId = 2;           // So follower can redirect clients
   int32 prevLogIndex = 3;       // Index of log entry immediately preceding new ones
   int32 prevLogTerm = 4;        // Term of prevLogIndex entry
-  repeated StockTransaction entries = 5;  // Log entries to store (empty for heartbeat; may send more than one for efficiency)
+  StockTransaction entries = 5;  // Log entries to store (empty for heartbeat; may send more than one for efficiency)
   int32 leaderCommit = 6;       // Leader’s commitIndex
 }
 
