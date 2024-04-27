@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package raft;
+
+// Service for client operations
+service ClientRaftService {
+  rpc AddEntry(Transaction) returns (EntryResponse);
+}
+
+// Service for Raft internal operations
+service InternalRaftService {
+  rpc AppendEntries(EntryRequest) returns (EntryResponse);
+  rpc RequestVote(VoteRequest) returns (VoteResponse);
+}
+
+// The request message for log entries to replicate
+message EntryRequest {
+  int32 leaderId = 1;           // Leader ID
+  int32 logTerm = 2;            // Leader’s term
+  int32 logIndex = 3;           // Index of the log entry
+  Transaction transaction = 4;  // Transaction to be replicated
+  int32 prevLogTerm = 5;        // Term of prevLogIndex entry
+  int32 prevLogIndex = 6;       // Index of log entry immediately preceding new ones
+}
+
+// A log entry consists of a command for the state machine, and the term when the entry was received by the leader
+message Transaction {
+  string userId = 1;            // User ID of the person who initiated the transaction
+  string stockId = 2;           // Stock symbol or identifier
+  int32 quantity = 3;           // Quantity of stocks to buy/sell
+  double price = 4;             // Price of the stock
+  int64 timestamp = 5;          // Unix timestamp of the transaction
+  enum TransactionType {
+    BUY = 0;
+    SELL = 1;
+  }
+  TransactionType transactionType = 6;  // Transaction type
+}
+
+// The response to AppendEntries RPC
+message EntryResponse {
+  int32 logTerm = 1;             // Current term, for leader to update itself
+  int32 logIndex = 2;            // Index of the log entry
+  bool success = 3;              // True if follower contained entry matching prevLogIndex and prevLogTerm
+}
+
+// The request message containing information about the node sending the request.
+message VoteRequest {
+  int32 term = 1;            // Current term, to detect stale requests
+  int32 candidateId = 2;        // Candidate requesting vote
+  int32 lastLogIndex = 3;       // Index of candidate's last log entry
+  int32 lastLogTerm = 4;        // Term of candidate's last log entry
+}
+
+// The response message containing the vote result.
+message VoteResponse {
+  int32 term = 1;               // Current term, for the candidate to update itself
+  bool voteGranted = 2;         // True means candidate received vote
+}
