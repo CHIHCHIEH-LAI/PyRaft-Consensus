@@ -79,8 +79,8 @@ class InternalRaftServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.AppendEntries = channel.unary_unary(
-                '/raft.InternalRaftService/AppendEntries',
+        self.AppendEntry = channel.unary_unary(
+                '/raft.InternalRaftService/AppendEntry',
                 request_serializer=raft__pb2.EntryRequest.SerializeToString,
                 response_deserializer=raft__pb2.EntryResponse.FromString,
                 )
@@ -95,7 +95,7 @@ class InternalRaftServiceServicer(object):
     """Service for Raft internal operations
     """
 
-    def AppendEntries(self, request, context):
+    def AppendEntry(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -110,8 +110,8 @@ class InternalRaftServiceServicer(object):
 
 def add_InternalRaftServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'AppendEntries': grpc.unary_unary_rpc_method_handler(
-                    servicer.AppendEntries,
+            'AppendEntry': grpc.unary_unary_rpc_method_handler(
+                    servicer.AppendEntry,
                     request_deserializer=raft__pb2.EntryRequest.FromString,
                     response_serializer=raft__pb2.EntryResponse.SerializeToString,
             ),
@@ -132,7 +132,7 @@ class InternalRaftService(object):
     """
 
     @staticmethod
-    def AppendEntries(request,
+    def AppendEntry(request,
             target,
             options=(),
             channel_credentials=None,
@@ -142,7 +142,7 @@ class InternalRaftService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/raft.InternalRaftService/AppendEntries',
+        return grpc.experimental.unary_unary(request, target, '/raft.InternalRaftService/AppendEntry',
             raft__pb2.EntryRequest.SerializeToString,
             raft__pb2.EntryResponse.FromString,
             options, channel_credentials,

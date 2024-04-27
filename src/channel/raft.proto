@@ -9,7 +9,7 @@ service ClientRaftService {
 
 // Service for Raft internal operations
 service InternalRaftService {
-  rpc AppendEntries(EntryRequest) returns (EntryResponse);
+  rpc AppendEntry(EntryRequest) returns (EntryResponse);
   rpc RequestVote(VoteRequest) returns (VoteResponse);
 }
 
