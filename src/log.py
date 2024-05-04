@@ -11,3 +11,6 @@ class LogEntry:
 class Log:
     def __init__(self):
         self.entries = defaultdict(list)
+    
+    def append_entry(self, log_entry: LogEntry):
+        pass
