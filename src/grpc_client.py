@@ -10,10 +10,10 @@ class gRPCClient:
     def make_append_entry_rpc(self):
         pass
 
-    def make_request_vote_rpc(self, url: str):
+    async def make_request_vote_rpc(self, url: str):
         with grpc.insecure_channel(url) as channel:
             stub = raft_pb2_grpc.RaftServiceStub(channel)
-            response = stub.RequestVote(raft_pb2.VoteRequest())
+            response = await stub.RequestVote(raft_pb2.VoteRequest())
             return response.voteGranted
 
     def make_add_transaction_rpc(self, url: str):
