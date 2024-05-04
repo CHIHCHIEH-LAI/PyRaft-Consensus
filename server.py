@@ -1,18 +1,25 @@
-from concurrent import futures
-import grpc
+import asyncio
+from grpc import aio
 
-from src.proto import raft_pb2
 from src.proto import raft_pb2_grpc
 from src.grpc_server import gRPCServer
 from src.raft_node import RaftNode
 
-def serve(host, port):
+async def serve(host, port):
     raft_node = RaftNode()
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    raft_pb2_grpc.add_InternalRaftServiceServicer_to_server(gRPCServer(raft_node), server)
+    await raft_node.start()
+
+    server = aio.server()
+    raft_pb2_grpc.add_RaftServiceServicer_to_server(gRPCServer(), server)
     server.add_insecure_port(f'{host}:{port}')
-    server.start()
-    server.wait_for_termination()
+    await server.start()
+
+    try:
+        await raft_node.wait_for_termination()
+        await server.wait_for_termination()
+    except KeyboardInterrupt:
+        await raft_node.stop()
+        await server.stop(0)
 
 if __name__ == '__main__':
-    serve(host='localhost', port=50051)
+    asyncio.run(serve(host='localhost', port=50051))
