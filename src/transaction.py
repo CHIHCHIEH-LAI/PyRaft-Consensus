@@ -2,13 +2,13 @@ import datetime
 from enum import Enum
 
 class TransactionType(Enum):
-    BUY = "buy"
-    SELL = "sell"
+    BUY = 0
+    SELL = 1
 
 class Transaction:
-    def __init__(self, user_id: str, stock_id: str, quantity: int, price: float, timestamp: datetime.datetime, transaction_type: TransactionType):
-        self.user_id = user_id
-        self.stock_id = stock_id
+    def __init__(self, userId: str, stockId: str, quantity: int, price: float, timestamp: datetime.datetime, transaction_type: TransactionType):
+        self.userId = userId
+        self.stockId = stockId
         self.quantity = quantity
         self.price = price
         self.timestamp = timestamp
