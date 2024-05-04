@@ -5,13 +5,11 @@ from src.log import LogEntry
 from src.transaction import Transaction
 
 class gRPCServer(raft_pb2_grpc.RaftServiceServicer):
-    def __init__(self, raft_node: RaftNode):
-        self.raft_node = raft_node
 
     def AppendEntry(self, request, context):
         transaction = Transaction(
-            user_id = request.userId,
-            stock_id = request.stockId,
+            userId = request.userId,
+            stockId = request.stockId,
             quantity = request.quantity,
             price = request.price,
             timestamp = request.timestamp,
