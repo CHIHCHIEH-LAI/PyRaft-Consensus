@@ -2,15 +2,11 @@ syntax = "proto3";
 
 package raft;
 
-// Service for client operations
-service ClientRaftService {
-  rpc AddTransaction(Transaction) returns (TransactionResponse);
-}
-
 // Service for Raft internal operations
-service InternalRaftService {
+service RaftService {
   rpc AppendEntry(EntryRequest) returns (EntryResponse);
   rpc RequestVote(VoteRequest) returns (VoteResponse);
+  rpc AddTransaction(Transaction) returns (TransactionResponse);
 }
 
 // The request message for log entries to replicate
@@ -39,9 +35,9 @@ message Transaction {
 
 // The response to AppendEntries RPC
 message EntryResponse {
-  int32 logTerm = 1;             // Current term, for leader to update itself
-  int32 logIndex = 2;            // Index of the log entry
-  bool success = 3;              // True if follower contained entry matching prevLogIndex and prevLogTerm
+  bool success = 1;              // True if EntryRequest was successful
+  int32 missingLogTerm = 2;         // Term of the missing log entry
+  int32 missingLogIndex = 3;        // Index of the missing log entry
 }
 
 // The request message containing information about the node sending the request.
@@ -54,8 +50,7 @@ message VoteRequest {
 
 // The response message containing the vote result.
 message VoteResponse {
-  int32 term = 1;               // Current term, for the candidate to update itself
-  bool voteGranted = 2;         // True means candidate received vote
+  bool voteGranted = 1;         // True means candidate received vote
 }
 
 message TransactionResponse {

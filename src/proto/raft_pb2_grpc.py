@@ -5,71 +5,7 @@ import grpc
 import raft_pb2 as raft__pb2
 
 
-class ClientRaftServiceStub(object):
-    """Service for client operations
-    """
-
-    def __init__(self, channel):
-        """Constructor.
-
-        Args:
-            channel: A grpc.Channel.
-        """
-        self.AddTransaction = channel.unary_unary(
-                '/raft.ClientRaftService/AddTransaction',
-                request_serializer=raft__pb2.Transaction.SerializeToString,
-                response_deserializer=raft__pb2.TransactionResponse.FromString,
-                )
-
-
-class ClientRaftServiceServicer(object):
-    """Service for client operations
-    """
-
-    def AddTransaction(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-
-def add_ClientRaftServiceServicer_to_server(servicer, server):
-    rpc_method_handlers = {
-            'AddTransaction': grpc.unary_unary_rpc_method_handler(
-                    servicer.AddTransaction,
-                    request_deserializer=raft__pb2.Transaction.FromString,
-                    response_serializer=raft__pb2.TransactionResponse.SerializeToString,
-            ),
-    }
-    generic_handler = grpc.method_handlers_generic_handler(
-            'raft.ClientRaftService', rpc_method_handlers)
-    server.add_generic_rpc_handlers((generic_handler,))
-
-
- # This class is part of an EXPERIMENTAL API.
-class ClientRaftService(object):
-    """Service for client operations
-    """
-
-    @staticmethod
-    def AddTransaction(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/raft.ClientRaftService/AddTransaction',
-            raft__pb2.Transaction.SerializeToString,
-            raft__pb2.TransactionResponse.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-
-class InternalRaftServiceStub(object):
+class RaftServiceStub(object):
     """Service for Raft internal operations
     """
 
@@ -80,18 +16,23 @@ class InternalRaftServiceStub(object):
             channel: A grpc.Channel.
         """
         self.AppendEntry = channel.unary_unary(
-                '/raft.InternalRaftService/AppendEntry',
+                '/raft.RaftService/AppendEntry',
                 request_serializer=raft__pb2.EntryRequest.SerializeToString,
                 response_deserializer=raft__pb2.EntryResponse.FromString,
                 )
         self.RequestVote = channel.unary_unary(
-                '/raft.InternalRaftService/RequestVote',
+                '/raft.RaftService/RequestVote',
                 request_serializer=raft__pb2.VoteRequest.SerializeToString,
                 response_deserializer=raft__pb2.VoteResponse.FromString,
                 )
+        self.AddTransaction = channel.unary_unary(
+                '/raft.RaftService/AddTransaction',
+                request_serializer=raft__pb2.Transaction.SerializeToString,
+                response_deserializer=raft__pb2.TransactionResponse.FromString,
+                )
 
 
-class InternalRaftServiceServicer(object):
+class RaftServiceServicer(object):
     """Service for Raft internal operations
     """
 
@@ -107,8 +48,14 @@ class InternalRaftServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def AddTransaction(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
 
-def add_InternalRaftServiceServicer_to_server(servicer, server):
+
+def add_RaftServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'AppendEntry': grpc.unary_unary_rpc_method_handler(
                     servicer.AppendEntry,
@@ -120,14 +67,19 @@ def add_InternalRaftServiceServicer_to_server(servicer, server):
                     request_deserializer=raft__pb2.VoteRequest.FromString,
                     response_serializer=raft__pb2.VoteResponse.SerializeToString,
             ),
+            'AddTransaction': grpc.unary_unary_rpc_method_handler(
+                    servicer.AddTransaction,
+                    request_deserializer=raft__pb2.Transaction.FromString,
+                    response_serializer=raft__pb2.TransactionResponse.SerializeToString,
+            ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'raft.InternalRaftService', rpc_method_handlers)
+            'raft.RaftService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
  # This class is part of an EXPERIMENTAL API.
-class InternalRaftService(object):
+class RaftService(object):
     """Service for Raft internal operations
     """
 
@@ -142,7 +94,7 @@ class InternalRaftService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/raft.InternalRaftService/AppendEntry',
+        return grpc.experimental.unary_unary(request, target, '/raft.RaftService/AppendEntry',
             raft__pb2.EntryRequest.SerializeToString,
             raft__pb2.EntryResponse.FromString,
             options, channel_credentials,
@@ -159,8 +111,25 @@ class InternalRaftService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/raft.InternalRaftService/RequestVote',
+        return grpc.experimental.unary_unary(request, target, '/raft.RaftService/RequestVote',
             raft__pb2.VoteRequest.SerializeToString,
             raft__pb2.VoteResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def AddTransaction(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/raft.RaftService/AddTransaction',
+            raft__pb2.Transaction.SerializeToString,
+            raft__pb2.TransactionResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
