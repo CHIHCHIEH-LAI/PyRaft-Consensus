@@ -1,21 +1,26 @@
-from src.state_machine import StateMachine
+from src.grpc_client import gRPCClient
 
 class ElectionModule:
-    def __init__(self, state_machine: StateMachine):
-        self.state_machine = state_machine
+    def __init__(self, memberTable: dict):
+        self.gRPC_client = gRPCClient()
+        self.memberTable = memberTable
         self.vote_count = 0
-        self.voted_for = None
 
-    def start_election(self):
+    async def run_election(self, nodeId: int, voteRequest: dict):
         self.vote_count = 1
-        self.voted_for = self.nodeId
-        self.increment_current_term()
-        self.transition_to_candidate()
+        await self.multicast_vote_requests(nodeId, voteRequest)
 
-    def on_vote_received(self):
-        self.vote_count += 1
-        if self.vote_count > self.node_count / 2:
-            self.transition_to_leader()
+    async def multicast_vote_requests(self, nodeId: int, voteRequest: dict):
+        for id, (host, port) in self.memberTable.items():
+            if id != nodeId:
+                await self.send_vote_request(host, port, voteRequest)
+                if self.has_won_election():
+                    return True
 
-    def get_vote_count(self):
-        return self.vote_count
+    async def send_vote_request(self, host: str, port: int, voteRequest: dict):
+        voteGranted = await self.gRPC_client.make_request_vote_rpc(host, port, voteRequest)
+        if voteGranted:
+            self.vote_count += 1
+
+    def has_won_election(self):
+        return self.vote_count > len(self.memberTable) // 2
