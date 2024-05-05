@@ -41,7 +41,7 @@ class gRPCServer(raft_pb2_grpc.RaftServiceServicer):
     def SendHeartbeat(self, request, context):
         leaderId = request.leaderId
         term = request.term
-        success = self.raft_node.respond_heartbeat(leaderId, term)
+        success = self.raft_node.respond_heartbeat(term, leaderId)
         return raft_pb2.HeartbeatResponse(success=success)
 
     def AddTransaction(self, request, context):

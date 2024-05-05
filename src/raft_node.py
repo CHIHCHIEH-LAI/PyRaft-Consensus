@@ -58,3 +58,12 @@ class RaftNode:
             'term': self.state_machine.get_current_term()
         }
         await self.heartbeat_manager.multicast_heartbeats(self.nodeId, heartbeat)
+
+    def respond_heartbeat(self, term: int, leaderId: int):
+        if term >= self.state_machine.get_current_term():
+            self.state_machine.set_current_term(term)
+            self.state_machine.to_follower()
+            self.heartbeat_manager.update_heartbeat()
+            self.election_module.update_leaderId(leaderId)
+            return True
+        return False

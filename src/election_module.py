@@ -7,6 +7,7 @@ class ElectionModule:
         self.state_machine = raft_node.state_machine
         self.memberTable = memberTable
         self.vote_count = 0
+        self.leaderId = None
 
     async def run_election(self, nodeId: int, voteRequest: dict):
         self.vote_count = 1
@@ -35,3 +36,6 @@ class ElectionModule:
                 self.state_machine.to_follower()
                 return True
         return False
+    
+    def update_leaderId(self, leaderId: int):
+        self.leaderId = leaderId

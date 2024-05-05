@@ -13,11 +13,14 @@ class HeartbeatManager:
     def has_timed_out(self):
         return (datetime.now() - self.lastHeartbeat).seconds > self.heartbeatTimeout
     
-    def multicast_heartbeats(self, nodeId: int, heartbeat: dict):
+    async def multicast_heartbeats(self, nodeId: int, heartbeat: dict):
         for id, (host, port) in self.memberTable.items():
             if id != nodeId:
-                self.send_heartbeat(host, port, heartbeat)
+                await self.send_heartbeat(host, port, heartbeat)
 
-    def send_heartbeat(self, host:str, port:int, heartbeat: dict):
-        self.gRPC_client.make_send_heartbeat_rpc(host, port, heartbeat)
+    async def send_heartbeat(self, host:str, port:int, heartbeat: dict):
+        await self.gRPC_client.make_send_heartbeat_rpc(host, port, heartbeat)
+        self.update_heartbeat()
+
+    def update_heartbeat(self):
         self.lastHeartbeat = datetime.now()
