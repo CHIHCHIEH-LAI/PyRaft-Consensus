@@ -19,5 +19,12 @@ class Log:
     def get_last_term(self):
         return self.lastTerm
     
+    def is_more_up_to_date(self, lastLogIndex: int, lastLogTerm: int):
+        if lastLogTerm > self.lastTerm:
+            return True
+        if lastLogTerm == self.lastTerm and lastLogIndex >= self.get_last_index():
+            return True
+        return False
+    
     def append_entry(self, log_entry: LogEntry):
         pass

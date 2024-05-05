@@ -4,10 +4,11 @@ from random import randint
 from src.grpc_client import gRPCClient
 
 class HeartbeatManager:
-    def __init__(self):
+    def __init__(self, gRPC_client: gRPCClient, memberTable: dict):
         self.heartbeatTimeout = randint(180, 240)
         self.lastHeartbeat = datetime.now()
-        self.gRPC_client = gRPCClient()
+        self.gRPC_client = gRPC_client
+        self.memberTable = memberTable
 
     def has_timed_out(self):
         return (datetime.now() - self.lastHeartbeat).seconds > self.heartbeatTimeout
