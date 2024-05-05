@@ -6,6 +6,7 @@ package raft;
 service RaftService {
   rpc AppendEntry(EntryRequest) returns (EntryResponse);
   rpc RequestVote(VoteRequest) returns (VoteResponse);
+  rpc SendHeartbeat(Heartbeat) returns (HeartbeatResponse);
   rpc AddTransaction(Transaction) returns (TransactionResponse);
 }
 
@@ -51,6 +52,17 @@ message VoteRequest {
 // The response message containing the vote result.
 message VoteResponse {
   bool voteGranted = 1;         // True means candidate received vote
+}
+
+// The heartbeat message sent by the leader to the followers
+message Heartbeat {
+  int32 leaderId = 1;           // Leader ID
+  int32 term = 2;               // Leader’s term
+}
+
+// The response to the heartbeat message
+message HeartbeatResponse {
+  bool success = 1;             // True if the heartbeat was successful
 }
 
 message TransactionResponse {

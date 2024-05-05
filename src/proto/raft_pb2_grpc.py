@@ -25,6 +25,11 @@ class RaftServiceStub(object):
                 request_serializer=raft__pb2.VoteRequest.SerializeToString,
                 response_deserializer=raft__pb2.VoteResponse.FromString,
                 )
+        self.SendHeartbeat = channel.unary_unary(
+                '/raft.RaftService/SendHeartbeat',
+                request_serializer=raft__pb2.Heartbeat.SerializeToString,
+                response_deserializer=raft__pb2.HeartbeatResponse.FromString,
+                )
         self.AddTransaction = channel.unary_unary(
                 '/raft.RaftService/AddTransaction',
                 request_serializer=raft__pb2.Transaction.SerializeToString,
@@ -48,6 +53,12 @@ class RaftServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def SendHeartbeat(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def AddTransaction(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -66,6 +77,11 @@ def add_RaftServiceServicer_to_server(servicer, server):
                     servicer.RequestVote,
                     request_deserializer=raft__pb2.VoteRequest.FromString,
                     response_serializer=raft__pb2.VoteResponse.SerializeToString,
+            ),
+            'SendHeartbeat': grpc.unary_unary_rpc_method_handler(
+                    servicer.SendHeartbeat,
+                    request_deserializer=raft__pb2.Heartbeat.FromString,
+                    response_serializer=raft__pb2.HeartbeatResponse.SerializeToString,
             ),
             'AddTransaction': grpc.unary_unary_rpc_method_handler(
                     servicer.AddTransaction,
@@ -114,6 +130,23 @@ class RaftService(object):
         return grpc.experimental.unary_unary(request, target, '/raft.RaftService/RequestVote',
             raft__pb2.VoteRequest.SerializeToString,
             raft__pb2.VoteResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def SendHeartbeat(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/raft.RaftService/SendHeartbeat',
+            raft__pb2.Heartbeat.SerializeToString,
+            raft__pb2.HeartbeatResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
