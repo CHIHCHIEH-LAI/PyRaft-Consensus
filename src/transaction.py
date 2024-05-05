@@ -13,3 +13,13 @@ class Transaction:
         self.price = price
         self.timestamp = timestamp
         self.transactionType = transactionType
+
+    def to_dict(self):
+        return {
+            'userId': self.userId,
+            'stockId': self.stockId,
+            'quantity': self.quantity,
+            'price': self.price,
+            'timestamp': self.timestamp,
+            'transactionType': self.transactionType
+        }
