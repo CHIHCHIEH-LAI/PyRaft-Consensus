@@ -2,7 +2,7 @@ from src.raft_node import RaftNode
 
 class ElectionModule:
     def __init__(self, raft_node: RaftNode, memberTable: dict):
-        self.log = raft_node.log
+        self.log_manager = raft_node.log_manager
         self.gRPC_client = raft_node.gRPC_client
         self.state_machine = raft_node.state_machine
         self.memberTable = memberTable
@@ -22,7 +22,7 @@ class ElectionModule:
         return False
 
     async def send_vote_request(self, host: str, port: int, voteRequest: dict):
-        voteGranted = await self.raft_node.gRPC_client.make_request_vote_rpc(host, port, voteRequest)
+        voteGranted = await self.gRPC_client.make_request_vote_rpc(host, port, voteRequest)
         if voteGranted:
             self.vote_count += 1
 
@@ -31,7 +31,7 @@ class ElectionModule:
     
     def respond_vote_request(self, term: int, lastLogIndex: int, lastLogTerm: int):
         if term > self.state_machine.get_current_term(): 
-            if self.log.is_more_up_to_date(lastLogIndex, lastLogTerm):
+            if self.log_manager.is_more_up_to_date(lastLogIndex, lastLogTerm):
                 self.state_machine.set_current_term(term)
                 self.state_machine.to_follower()
                 return True
