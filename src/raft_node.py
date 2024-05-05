@@ -45,5 +45,7 @@ class RaftNode:
     
     async def multicast_heartbeats(self):
         heartbeat = {
-            
+            'leaderId': self.nodeId,
+            'term': self.state_machine.get_current_term()
         }
+        await self.heartbeat_manager.multicast_heartbeats(self.nodeId, heartbeat)
