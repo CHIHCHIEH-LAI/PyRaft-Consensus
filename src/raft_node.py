@@ -16,6 +16,7 @@ class RaftNode:
 
     async def run(self):
         while not self.state_machine.is_stopped():
+            print(self.log_manager.entries)
             if self.state_machine.is_leader():
                 await self.multicast_heartbeats()
             elif self.state_machine.is_follower():
