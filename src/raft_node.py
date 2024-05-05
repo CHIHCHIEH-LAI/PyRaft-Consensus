@@ -1,5 +1,5 @@
 from src.heartbeat_manager import HeartbeatManager
-from src.log import Log, LogEntry
+from src.log_manager import LogManager, LogEntry
 from src.state_machine import StateMachine
 from src.election_module import ElectionModule
 from src.grpc_client import gRPCClient
@@ -8,7 +8,7 @@ class RaftNode:
     def __init__(self, nodeId: int, memberTable: dict):
         self.nodeId = nodeId
         self.memberTable = memberTable
-        self.log = Log()
+        self.log_manager = LogManager()
         self.gRPC_client = gRPCClient()
         self.state_machine = StateMachine()
         self.election_module = ElectionModule(self, memberTable)
@@ -36,11 +36,12 @@ class RaftNode:
         voteRequest = {
             'term': self.state_machine.get_current_term(),
             'candidateId': self.nodeId,
-            'lastLogIndex': self.log.get_last_index(),
-            'lastLogTerm': self.log.get_last_term()
+            'lastLogIndex': self.log_manager.get_last_index(),
+            'lastLogTerm': self.log_manager.get_last_term()
         }
         success = await self.election_module.run_election(self.nodeId, voteRequest)
         if success:
+            self.election_module.update_leaderId(self.nodeId)
             self.state_machine.to_leader()
         else:
             self.state_machine.to_follower()
@@ -67,3 +68,16 @@ class RaftNode:
             self.election_module.update_leaderId(leaderId)
             return True
         return False
+    
+    async def add_transaction(self, transaction: dict):
+        if self.nodeId != self.election_module.leaderId:
+            host, port = self.memberTable[self.election_module.leaderId]
+            response = await self.gRPC_client.make_add_transaction_rpc(host, port, transaction)
+            return response
+        else:
+            response = await self.log_manager.add_transaction(self.state_machine.get_current_term(), transaction)
+            return response
+        
+    def append_log_entry(self, log_entry: LogEntry):
+        success = self.log_manager.append_log_entry(log_entry)
+        return success, 0, 0

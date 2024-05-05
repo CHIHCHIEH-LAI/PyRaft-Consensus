@@ -1,7 +1,7 @@
 from src.proto import raft_pb2
 from src.proto import raft_pb2_grpc
 from src.raft_node import RaftNode
-from src.log import LogEntry
+from src.log_manager import LogEntry
 from src.transaction import Transaction
 
 class gRPCServer(raft_pb2_grpc.RaftServiceServicer):
@@ -44,6 +44,6 @@ class gRPCServer(raft_pb2_grpc.RaftServiceServicer):
         success = self.raft_node.respond_heartbeat(term, leaderId)
         return raft_pb2.HeartbeatResponse(success=success)
 
-    def AddTransaction(self, request, context):
-        success = self.raft_node.add_transaction()
+    async def AddTransaction(self, request, context):
+        success = await self.raft_node.add_transaction()
         return raft_pb2.TransactionResponse(success=success)
