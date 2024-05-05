@@ -1,8 +1,10 @@
-from src.grpc_client import gRPCClient
+from src.raft_node import RaftNode
 
 class ElectionModule:
-    def __init__(self, memberTable: dict):
-        self.gRPC_client = gRPCClient()
+    def __init__(self, raft_node: RaftNode, memberTable: dict):
+        self.log = raft_node.log
+        self.gRPC_client = raft_node.gRPC_client
+        self.state_machine = raft_node.state_machine
         self.memberTable = memberTable
         self.vote_count = 0
 
@@ -16,11 +18,20 @@ class ElectionModule:
                 await self.send_vote_request(host, port, voteRequest)
                 if self.has_won_election():
                     return True
+        return False
 
     async def send_vote_request(self, host: str, port: int, voteRequest: dict):
-        voteGranted = await self.gRPC_client.make_request_vote_rpc(host, port, voteRequest)
+        voteGranted = await self.raft_node.gRPC_client.make_request_vote_rpc(host, port, voteRequest)
         if voteGranted:
             self.vote_count += 1
 
     def has_won_election(self):
         return self.vote_count > len(self.memberTable) // 2
+    
+    def respond_vote_request(self, term: int, lastLogIndex: int, lastLogTerm: int):
+        if term > self.state_machine.get_current_term(): 
+            if self.log.is_more_up_to_date(lastLogIndex, lastLogTerm):
+                self.state_machine.set_current_term(term)
+                self.state_machine.to_follower()
+                return True
+        return False
