@@ -6,6 +6,9 @@ from src.transaction import Transaction
 
 class gRPCServer(raft_pb2_grpc.RaftServiceServicer):
 
+    def __init__(self, raft_node: RaftNode):
+        self.raft_node = raft_node
+
     def AppendEntry(self, request, context):
         transaction = Transaction(
             userId = request.userId,
