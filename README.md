@@ -1,6 +1,6 @@
 # Distributed Stock Transaction Log with Raft Consensus (unfinished)
 ### Description
-This project is an implementation of the Raft consensus algorithm, which is a protocol used for managing a replicated log across multiple servers and ensuring that they all agree on the order and content of the log entries, even in the event of failures. Raft is designed to be easy to understand and was introduced as an alternative to the Paxos consensus algorithm.
+This project is a distributed system implementation for managing stock transactions using the Raft consensus algorithm. The Raft consensus algorithm is a protocol used for ensuring consistency across distributed systems. It allows a collection of machines to work as a coherent group that can survive the failures of some of its members.
 
 The project is structured around several key classes:
 
