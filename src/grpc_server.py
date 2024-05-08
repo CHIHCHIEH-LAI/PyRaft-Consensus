@@ -1,5 +1,4 @@
-from src.proto import raft_pb2
-from src.proto import raft_pb2_grpc
+from src.proto import raft_pb2, raft_pb2_grpc
 from src.raft_node import RaftNode
 from src.log_manager import LogEntry
 from src.transaction import Transaction
