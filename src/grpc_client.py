@@ -1,6 +1,5 @@
 import grpc
-from src.proto import raft_pb2
-from src.proto import raft_pb2_grpc
+from src.proto import raft_pb2, raft_pb2_grpc
 
 class gRPCClient:
 
