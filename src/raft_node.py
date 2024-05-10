@@ -1,8 +1,13 @@
-from src.heartbeat_manager import HeartbeatManager
-from src.log_manager import LogManager, LogEntry
-from src.state_machine import StateMachine
-from src.election_module import ElectionModule
-from src.grpc_client import gRPCClient
+import grpc 
+import time
+
+from src.channel.proto import raft_pb2_grpc
+from src.consensus.heartbeat_manager import HeartbeatManager
+from src.consensus.log_manager import LogManager, LogEntry
+from src.consensus.state_machine import StateMachine
+from src.consensus.election_module import ElectionModule
+from src.channel.grpc_client import gRPCClient
+from src.channel.grpc_server import gRPCServer
 
 class RaftNode:
     def __init__(self, nodeId: int, memberTable: dict):
@@ -10,13 +15,22 @@ class RaftNode:
         self.memberTable = memberTable
         self.log_manager = LogManager()
         self.gRPC_client = gRPCClient()
+        self.gRPC_server = self.setup_gRPC_server()
         self.state_machine = StateMachine()
         self.election_module = ElectionModule(self, memberTable)
         self.heartbeat_manager = HeartbeatManager(self.gRPC_client, memberTable)
 
+    def setup_gRPC_server(self):
+        host, port = self.memberTable[self.nodeId]
+        return gRPCServer(host, port, self)
+
     async def run(self):
+        await self.gRPC_server.start()
+        time.sleep(2)
+        await self.run_node()
+            
+    async def run_node(self):
         while not self.state_machine.is_stopped():
-            print(self.log_manager.entries)
             if self.state_machine.is_leader():
                 await self.multicast_heartbeats()
             elif self.state_machine.is_follower():
