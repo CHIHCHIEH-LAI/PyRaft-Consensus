@@ -11,6 +11,7 @@ from src.channel.grpc_server import gRPCServer
 logging.basicConfig(level=logging.INFO)
 
 async def serve(id: int, memberTable: dict):
+    logging.info(f'Starting server {id}')
     raft_node = RaftNode(id, memberTable)
     server = grpc.aio.server()
     raft_pb2_grpc.add_RaftServiceServicer_to_server(gRPCServer(raft_node), server)
@@ -18,9 +19,12 @@ async def serve(id: int, memberTable: dict):
     server.add_insecure_port(f'{host}:{port}')
 
     await server.start()
+    logging.info(f'Server {id} started')
     time.sleep(5)
-    # await raft_node.run()
+    await raft_node.run()
+    logging.info(f'Raft node {id} running')
     await server.wait_for_termination()
+    logging.info(f'Server {id} terminated')
 
 async def start_service():
     memberTable = {
@@ -39,7 +43,9 @@ async def start_service():
         serve(5, memberTable)
     ]
 
+    logging.info('Starting all servers')
     await asyncio.gather(*servers)
+    logging.info('All servers terminated')
 
 if __name__ == '__main__':
 
