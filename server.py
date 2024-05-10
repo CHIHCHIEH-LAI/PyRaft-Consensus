@@ -19,11 +19,10 @@ async def serve(id: int, memberTable: dict):
 
     await server.start()
     time.sleep(5)
-    await raft_node.run()
+    # await raft_node.run()
     await server.wait_for_termination()
 
-if __name__ == '__main__':
-
+async def start_service():
     memberTable = {
         1: ('localhost', 50051),
         2: ('localhost', 50052),
@@ -40,4 +39,8 @@ if __name__ == '__main__':
         serve(5, memberTable)
     ]
 
-    asyncio.run(asyncio.gather(*servers))
+    await asyncio.gather(*servers)
+
+if __name__ == '__main__':
+
+    asyncio.run(start_service())
