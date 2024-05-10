@@ -1,7 +1,7 @@
 from datetime import datetime
 from random import randint
 
-from src.grpc_client import gRPCClient
+from src.channel.grpc_client import gRPCClient
 
 class HeartbeatManager:
     def __init__(self, gRPC_client: gRPCClient, memberTable: dict):

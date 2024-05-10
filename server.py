@@ -2,7 +2,7 @@ import asyncio
 from grpc import aio
 
 from src.proto import raft_pb2_grpc
-from src.grpc_server import gRPCServer
+from src.channel.grpc_server import gRPCServer
 from src.raft_node import RaftNode
 
 async def serve(id: int,  memberTable: dict):

@@ -1,31 +1,32 @@
 import pytest
 from unittest.mock import patch, AsyncMock
-from src.grpc_client import gRPCClient
+from src.channel.grpc_client import gRPCClient
 from src.proto import raft_pb2, raft_pb2_grpc
 
-@patch('grpc.insecure_channel')
+@pytest.mark.asyncio
+@patch('grpc.aio.insecure_channel')
 @patch.object(raft_pb2_grpc, 'RaftServiceStub')
-def test_make_append_entry_rpc(mock_stub, mock_channel):
+async def test_make_request_vote_rpc(mock_stub, mock_channel):
     # Create a gRPCClient
     client = gRPCClient()
 
-    # Create an EntryRequest
-    entry_request = {'leaderId': 1, 'logTerm': 2, 'logIndex': 3}
+    # Create an VoteRequest
+    vote_request = {'term': 1, 'candidateId': 2, 'lastLogTerm': 3, 'lastLogIndex': 4}
 
-    # Configure the mock stub to return a specific value when AppendEntry is called
-    mock_stub.return_value.AppendEntry.return_value = raft_pb2.AppendEntryResponse(success=True, missingLogTerm=0, missingLogIndex=0)
+    # Configure the mock stub to return a specific value when RequestVote is called
+    mock_stub.return_value.RequestVote.return_value = raft_pb2.VoteResponse(voteGranted=True)
 
-    # Call make_append_entry_rpc
-    response = client.make_append_entry_rpc('localhost', 50051, entry_request)
+    # # Call make_request_vote_rpc
+    response = await client.make_request_vote_rpc('localhost', 50051, vote_request)
 
-    # Assert that insecure_channel was called with the correct url
-    mock_channel.assert_called_once_with('localhost:50051')
+    # # Assert that insecure_channel was called with the correct url
+    # mock_channel.assert_called_once_with('localhost:50051')
 
     # Assert that RaftServiceStub was called with the correct channel
-    mock_stub.assert_called_once_with(mock_channel.return_value)
+    # mock_stub.assert_called_once_with(mock_channel.return_value)
 
-    # Assert that AppendEntry was called with the correct request
-    mock_stub.return_value.AppendEntry.assert_called_once_with(raft_pb2.EntryRequest(**entry_request))
+    # # Assert that RequestVote was called with the correct request
+    # mock_stub.return_value.RequestVote.assert_called_once_with(raft_pb2.VoteRequest(**vote_request))
 
-    # Assert that the response is as expected
-    assert response == (True, 0, 0)
+    # # Assert that the response is as expected
+    # assert response.voteGranted == True

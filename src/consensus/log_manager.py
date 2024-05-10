@@ -1,5 +1,5 @@
-from src.transaction import Transaction
-from src.grpc_client import gRPCClient
+from src.schema.transaction import Transaction
+from src.channel.grpc_client import gRPCClient
 
 class LogEntry:
     def __init__(self, leaderId: int, logTerm: int, logIndex: int, transaction: Transaction):
