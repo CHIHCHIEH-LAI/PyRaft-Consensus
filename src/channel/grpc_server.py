@@ -5,7 +5,7 @@ from src.raft_node import RaftNode
 from src.consensus.log_manager import LogEntry
 from src.schema.transaction import Transaction
 
-class RaftService(raft_pb2_grpc.RaftServiceServicer):
+class gRPCServer(raft_pb2_grpc.RaftServiceServicer):
 
     def __init__(self, raft_node: RaftNode):
         self.raft_node = raft_node
@@ -48,14 +48,3 @@ class RaftService(raft_pb2_grpc.RaftServiceServicer):
     async def AddTransaction(self, request, context):
         success = await self.raft_node.add_transaction()
         return raft_pb2.TransactionResponse(success=success)
-    
-class gRPCServer:
-    def __init__(self, host: str, port: int, raft_node: RaftNode):
-        self.raft_node = raft_node
-        self.server = grpc.aio.server()
-        raft_pb2_grpc.add_RaftServiceServicer_to_server(RaftService(raft_node), self.server)
-        self.server.add_insecure_port(f'{host}:{port}')
-
-    async def start(self):
-        await self.server.start()
-        await self.server.wait_for_termination()
