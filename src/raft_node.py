@@ -1,7 +1,5 @@
-import grpc 
 import time
 
-from src.channel.proto import raft_pb2_grpc
 from src.consensus.heartbeat_manager import HeartbeatManager
 from src.consensus.log_manager import LogManager, LogEntry
 from src.consensus.state_machine import StateMachine
