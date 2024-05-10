@@ -1,10 +1,12 @@
-from src.raft_node import RaftNode
+from src.consensus.log_manager import LogManager
+from src.channel.grpc_client import gRPCClient
+from src.consensus.state_machine import StateMachine
 
 class ElectionModule:
-    def __init__(self, raft_node: RaftNode, memberTable: dict):
-        self.log_manager = raft_node.log_manager
-        self.gRPC_client = raft_node.gRPC_client
-        self.state_machine = raft_node.state_machine
+    def __init__(self, log_manager: LogManager, gRPC_client: gRPCClient, state_machine: StateMachine, memberTable: dict):
+        self.log_manager = log_manager
+        self.gRPC_client = gRPC_client
+        self.state_machine = state_machine
         self.memberTable = memberTable
         self.vote_count = 0
         self.leaderId = None
