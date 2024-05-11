@@ -6,6 +6,7 @@ from src.consensus.log_manager import LogManager, LogEntry
 from src.consensus.state_machine import StateMachine
 from src.consensus.election_module import ElectionModule
 from src.channel.grpc_client import gRPCClient
+from src.schema.transaction import Transaction
 
 class RaftNode:
     def __init__(self, nodeId: int, memberTable: dict):
@@ -74,15 +75,15 @@ class RaftNode:
             return True
         return False
     
-    async def add_transaction(self, transaction: dict):
+    async def add_transaction(self, transaction: Transaction):
         if self.nodeId != self.election_module.leaderId:
             host, port = self.memberTable[self.election_module.leaderId]
-            response = await self.gRPC_client.make_add_transaction_rpc(host, port, transaction)
-            return response
+            success = await self.gRPC_client.make_add_transaction_rpc(host, port, transaction.to_dict())
+            return success
         else:
-            response = await self.log_manager.add_transaction(self.state_machine.get_current_term(), transaction)
-            return response
-        
+            success = await self.log_manager.add_transaction(self.state_machine.get_current_term(), transaction.to_dict())
+            return success
+    
     def append_log_entry(self, log_entry: LogEntry):
         success = self.log_manager.append_log_entry(log_entry)
         return success, 0, 0
@@ -94,9 +95,10 @@ class RaftNode:
             'currentTerm': self.state_machine.currentTerm,
             'heartbeatTimeout': self.heartbeat_manager.heartbeatTimeout,
             'lastHeartbeat': f'{self.heartbeat_manager.lastHeartbeat.minute}:{self.heartbeat_manager.lastHeartbeat.second}',
-            'voteCount': self.election_module.vote_count,
+            # 'voteCount': self.election_module.vote_count,
             'leaderId': self.election_module.leaderId,
             'lastTerm': self.log_manager.get_last_term(),
-            'lastIndex': self.log_manager.get_last_index()
+            'lastIndex': self.log_manager.get_last_index(),
+            'lastEntry': self.log_manager.entries[-1].transaction.to_dict() if len(self.log_manager.entries) > 0 else None
         }
         logger.debug(f'Snapshot: {snapshot}')
