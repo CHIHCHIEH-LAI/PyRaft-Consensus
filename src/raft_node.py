@@ -26,9 +26,12 @@ class RaftNode:
             elif self.state_machine.is_leader():
                 await self.multicast_heartbeats()
             else:
-                raise Exception('Invalid state')
+                break
             self.print_snapshot()
             await asyncio.sleep(1)
+
+    def stop(self):
+        self.state_machine.to_stopped()
 
     def wait_for_heartbeat(self):
         if self.heartbeat_manager.has_timed_out():
