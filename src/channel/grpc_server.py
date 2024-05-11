@@ -46,5 +46,13 @@ class gRPCServer(raft_pb2_grpc.RaftServiceServicer):
         return raft_pb2.HeartbeatResponse(success=success)
 
     async def AddTransaction(self, request, context):
-        success = await self.raft_node.add_transaction()
+        transaction = Transaction(
+            userId=request.userId,
+            stockId=request.stockId,
+            quantity=request.quantity,
+            price=request.price,
+            timestamp=request.timestamp,
+            transactionType=request.transactionType
+        )
+        success = await self.raft_node.add_transaction(transaction)
         return raft_pb2.TransactionResponse(success=success)
