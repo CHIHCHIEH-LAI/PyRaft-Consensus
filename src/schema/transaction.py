@@ -1,4 +1,3 @@
-import datetime
 from enum import Enum
 
 class TransactionType(Enum):
@@ -6,7 +5,7 @@ class TransactionType(Enum):
     SELL = 1
 
 class Transaction:
-    def __init__(self, userId: str, stockId: str, quantity: int, price: float, timestamp: datetime.datetime, transactionType: TransactionType):
+    def __init__(self, userId: str, stockId: str, quantity: int, price: float, timestamp: int, transactionType: TransactionType):
         self.userId = userId
         self.stockId = stockId
         self.quantity = quantity
