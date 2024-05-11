@@ -20,7 +20,7 @@ Key Skills: asyncio, gRPC, Raft Consensus
 
 ### Improvement
 - logic for dealing with missing log entry
-- containerize raft nodes and deploy them by using K8s
+- containerize raft nodes
 
 ### Command
 - Generate Python gRPC Code: python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. raft.proto 
