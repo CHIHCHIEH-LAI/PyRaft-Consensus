@@ -1,3 +1,5 @@
+import asyncio
+
 from src.schema.transaction import Transaction
 from src.channel.grpc_client import gRPCClient
 
@@ -48,10 +50,10 @@ class LogManager:
         self.append_log_entry(logEntry)
 
         await self.multicast_log_entry()
+        return True
     
     def append_log_entry(self, logEntry: LogEntry):
         self.entries.append(logEntry)
-        return True
 
     async def multicast_log_entry(self):
         entryRequest = {
@@ -62,10 +64,11 @@ class LogManager:
             'prevLogTerm': self.entries[-2].logTerm if len(self.entries) > 1 else 0,
             'prevLogIndex': self.entries[-2].logIndex if len(self.entries) > 1 else 0,
         }
+        send_log_entry_tasks = []
         for id, (host, port) in self.memberTable.items():
             if id != self.nodeId:
-                await self.send_log_entry(host, port, entryRequest)
-        return True
+                send_log_entry_tasks.append(self.send_log_entry(host, port, entryRequest))
+        await asyncio.gather(*send_log_entry_tasks)
 
     async def send_log_entry(self, host: str, port: int, entryRequest: dict):
         success, missingLogTerm, missingLogIndex = await self.gRPC_client.make_append_entry_rpc(host, port, entryRequest)
