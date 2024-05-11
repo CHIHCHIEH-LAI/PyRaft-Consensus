@@ -14,14 +14,14 @@ class ElectionModule:
     async def run_election(self, nodeId: int, voteRequest: dict):
         self.vote_count = 1
         await self.multicast_vote_requests(nodeId, voteRequest)
+        success = self.has_won_election()
+        self.vote_count = 0
+        return success
 
     async def multicast_vote_requests(self, nodeId: int, voteRequest: dict):
         for id, (host, port) in self.memberTable.items():
             if id != nodeId:
                 await self.send_vote_request(host, port, voteRequest)
-                if self.has_won_election():
-                    return True
-        return False
 
     async def send_vote_request(self, host: str, port: int, voteRequest: dict):
         voteGranted = await self.gRPC_client.make_request_vote_rpc(host, port, voteRequest)
