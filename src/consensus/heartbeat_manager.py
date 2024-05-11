@@ -5,7 +5,7 @@ from src.channel.grpc_client import gRPCClient
 
 class HeartbeatManager:
     def __init__(self, gRPC_client: gRPCClient, memberTable: dict):
-        self.heartbeatTimeout = randint(30, 60)
+        self.heartbeatTimeout = randint(1, 10)
         self.lastHeartbeat = datetime.now()
         self.gRPC_client = gRPC_client
         self.memberTable = memberTable
