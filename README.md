@@ -40,4 +40,6 @@ Key Skills: asyncio, gRPC, Raft Consensus
 ## Source
 
 - raft: https://www.youtube.com/watch?v=IujMVjKvWP4
-- asyncio: https://www.youtube.com/watch?v=K56nNuBEd0c, https://www.youtube.com/watch?v=brYsDi-JajI
+- asyncio:
+  - https://www.youtube.com/watch?v=K56nNuBEd0c
+  - https://www.youtube.com/watch?v=brYsDi-JajI
