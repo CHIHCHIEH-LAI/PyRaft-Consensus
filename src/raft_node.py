@@ -1,4 +1,5 @@
-import time
+import asyncio
+from loguru import logger
 
 from src.consensus.heartbeat_manager import HeartbeatManager
 from src.consensus.log_manager import LogManager, LogEntry
@@ -10,25 +11,24 @@ class RaftNode:
     def __init__(self, nodeId: int, memberTable: dict):
         self.nodeId = nodeId
         self.memberTable = memberTable
-        # self.log_manager = LogManager()
         self.gRPC_client = gRPCClient()
-        # self.state_machine = StateMachine()
-        # self.election_module = ElectionModule(log_manager, gRPC_client, state_machine, memberTable)
-        # self.heartbeat_manager = HeartbeatManager(self.gRPC_client, memberTable)
+        self.state_machine = StateMachine()
+        self.log_manager = LogManager(nodeId, memberTable, self.gRPC_client)
+        self.election_module = ElectionModule(self.log_manager, self.gRPC_client, self.state_machine, memberTable)
+        self.heartbeat_manager = HeartbeatManager(self.gRPC_client, memberTable)
      
     async def run(self):
         while not self.state_machine.is_stopped():
-            if self.state_machine.is_leader():
-                await self.multicast_heartbeats()
-            elif self.state_machine.is_follower():
-                await self.wait_for_heartbeat()
+            if self.state_machine.is_follower():
+                self.wait_for_heartbeat()
             elif self.state_machine.is_candidate():
                 await self.run_election()
+            elif self.state_machine.is_leader():
+                await self.multicast_heartbeats()
             else:
                 raise Exception('Invalid state')
-
-    def stop(self):
-        self.state_machine.to_stopped()
+            self.print_snapshot()
+            await asyncio.sleep(1)
 
     def wait_for_heartbeat(self):
         if self.heartbeat_manager.has_timed_out():
@@ -83,3 +83,17 @@ class RaftNode:
     def append_log_entry(self, log_entry: LogEntry):
         success = self.log_manager.append_log_entry(log_entry)
         return success, 0, 0
+    
+    def print_snapshot(self):
+        snapshot = {
+            'nodeId': self.nodeId,
+            'state': self.state_machine.state,
+            'currentTerm': self.state_machine.currentTerm,
+            'heartbeatTimeout': self.heartbeat_manager.heartbeatTimeout,
+            'lastHeartbeat': f'{self.heartbeat_manager.lastHeartbeat.minute}:{self.heartbeat_manager.lastHeartbeat.second}',
+            'voteCount': self.election_module.vote_count,
+            'leaderId': self.election_module.leaderId,
+            'lastTerm': self.log_manager.get_last_term(),
+            'lastIndex': self.log_manager.get_last_index()
+        }
+        logger.debug(f'Snapshot: {snapshot}')
