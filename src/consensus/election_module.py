@@ -1,3 +1,5 @@
+import asyncio
+
 from src.consensus.log_manager import LogManager
 from src.channel.grpc_client import gRPCClient
 from src.consensus.state_machine import StateMachine
@@ -19,9 +21,11 @@ class ElectionModule:
         return success
 
     async def multicast_vote_requests(self, nodeId: int, voteRequest: dict):
+        send_vote_request_tasks = []
         for id, (host, port) in self.memberTable.items():
             if id != nodeId:
-                await self.send_vote_request(host, port, voteRequest)
+                send_vote_request_tasks.append(self.send_vote_request(host, port, voteRequest))
+        await asyncio.gather(*send_vote_request_tasks)
 
     async def send_vote_request(self, host: str, port: int, voteRequest: dict):
         voteGranted = await self.gRPC_client.make_request_vote_rpc(host, port, voteRequest)
