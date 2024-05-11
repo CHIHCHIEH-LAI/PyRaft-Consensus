@@ -1,7 +1,12 @@
 import asyncio
 from loguru import logger
+import sys
 
 from src.raft_service import RaftService
+
+# Set the minimum level to DEBUG
+logger.remove()
+logger.add(sys.stderr, level="DEBUG")
 
 async def start_service():
     memberTable = {
