@@ -1,10 +1,7 @@
 import asyncio
-import logging
+from loguru import logger
 
 from src.raft_service import RaftService
-
-# Configure the logging module
-logging.basicConfig(level=logging.INFO)
 
 async def start_service():
     memberTable = {
@@ -20,9 +17,9 @@ async def start_service():
         raft_service = RaftService(id, memberTable)
         serves.append(raft_service.serve())
     
-    logging.info('Starting all servers')
+    logger.info('Starting all servers')
     await asyncio.gather(*serves)
-    logging.info('All servers terminated')
+    logger.info('All servers terminated')
 
 if __name__ == '__main__':
 

@@ -1,5 +1,5 @@
 import asyncio
-import logging
+from loguru import logger
 import grpc
 
 from src.raft_node import RaftNode
@@ -9,7 +9,7 @@ from src.channel.grpc_server import gRPCServer
 class RaftService:
     def __init__(self, id: int, memberTable: dict):
         self.id = id
-        logging.info(f'Starting server {id}')
+        logger.info(f'Starting server {id}')
         self.raft_node = RaftNode(id, memberTable)
         self.server = grpc.aio.server()
 
@@ -19,11 +19,11 @@ class RaftService:
 
     async def serve(self):
         await self.server.start()
-        logging.info(f'Server {self.id} started')
+        logger.info(f'Server {self.id} started')
         await asyncio.sleep(5)
         await self.raft_node.run()
-        logging.info(f'Raft node {self.id} running')
+        logger.info(f'Raft node {self.id} running')
         await self.server.wait_for_termination()
-        logging.info(f'Server {self.id} terminated')
+        logger.info(f'Server {self.id} terminated')
 
 
