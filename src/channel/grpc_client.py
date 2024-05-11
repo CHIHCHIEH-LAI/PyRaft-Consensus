@@ -27,7 +27,7 @@ class gRPCClient:
         url = self.construct_url(host, port)
         async with grpc.aio.insecure_channel(url) as channel:
             stub = raft_pb2_grpc.RaftServiceStub(channel)
-            response = await stub.AddTransaction(raft_pb2.Transaction(transaction))
+            response = await stub.AddTransaction(raft_pb2.Transaction(**transaction))
             return response.success
         
     def construct_url(self, host: str, port: int):
