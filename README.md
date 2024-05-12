@@ -37,7 +37,7 @@ Key Skills: asyncio, gRPC, Raft Consensus
 - logic for dealing with missing log entry
 - containerize raft nodes
 
-## Source
+## Reources
 
 - raft: https://www.youtube.com/watch?v=IujMVjKvWP4
 - asyncio:
