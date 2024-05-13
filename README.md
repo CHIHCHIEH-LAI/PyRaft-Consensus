@@ -30,7 +30,7 @@ Key Skills: asyncio, gRPC, Raft Consensus
 
 - generate Python gRPC Code: '''python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. raft.proto'''
 - start servers concurrently: '''python server.py'''
-- send transaction request: '''python client'''
+- send transaction request: '''python client.py'''
 
 ## Improvement
 
